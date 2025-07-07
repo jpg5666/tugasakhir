@@ -1,4 +1,5 @@
-const CACHE_NAME = "story-app-cache-v3";
+const CACHE_NAME = "story-app-cache-v5";
+
 const urlsToCache = [
   "/",
   "/index.html",
@@ -8,6 +9,8 @@ const urlsToCache = [
   "/images/icon-512.png",
   "/styles.css",
   "/home.css",
+  "/app.css",
+  "/app.bundle.js",
 ];
 
 self.addEventListener("install", (event) => {
@@ -16,12 +19,14 @@ self.addEventListener("install", (event) => {
     caches.open(CACHE_NAME).then((cache) =>
       Promise.all(
         urlsToCache.map((url) =>
-          fetch(url)
+          fetch(new Request(url, { cache: "reload" }))
             .then((res) => {
-              if (!res.ok) throw new Error(`Failed to fetch ${url}`);
-              return cache.put(url, res.clone());
+              if (!res.ok) throw new Error(`Gagal fetch ${url}`);
+              return cache.put(url, res);
             })
-            .catch(() => {})
+            .catch(() => {
+              console.warn("Tidak berhasil cache:", url);
+            })
         )
       )
     )
@@ -30,45 +35,50 @@ self.addEventListener("install", (event) => {
 
 self.addEventListener("activate", (event) => {
   event.waitUntil(
-    caches
-      .keys()
-      .then((cacheNames) =>
-        Promise.all(
-          cacheNames.filter((name) => name !== CACHE_NAME).map((name) => caches.delete(name))
-        )
+    caches.keys().then((names) =>
+      Promise.all(
+        names.filter((n) => n !== CACHE_NAME).map((n) => caches.delete(n))
       )
+    )
   );
   self.clients.claim();
 });
 
 self.addEventListener("fetch", (event) => {
-  event.respondWith(
-    caches.match(event.request).then((cachedResponse) => {
-      if (cachedResponse) return cachedResponse;
+  const { request } = event;
 
-      const url = event.request.url;
+  event.respondWith(
+    caches.match(request).then((cached) => {
+      if (cached) return cached;
+
+      const url = request.url;
 
       if (
         url.includes("story-api.dicoding.dev/images/") ||
         url.includes("tile.openstreetmap.org")
       ) {
-        return caches.open(CACHE_NAME).then((cache) =>
-          fetch(event.request)
-            .then((response) => {
-              cache.put(event.request, response.clone());
-              return response;
-            })
-            .catch(() => caches.match("/images/user.png"))
-        );
+        return fetch(request)
+          .then((res) => {
+            return caches.open(CACHE_NAME).then((cache) => {
+              cache.put(request, res.clone());
+              return res;
+            });
+          })
+          .catch(() => caches.match("/images/user.png"));
       }
 
-      return fetch(event.request).catch(
-        () =>
-          new Response("<h1>Offline</h1>", {
-            headers: { "Content-Type": "text/html" },
-            status: 200,
-          })
-      );
+      return fetch(request).catch(() => {
+        if (request.destination === "document") {
+          return caches.match("/index.html");
+        }
+        if (request.destination === "script") {
+          return caches.match("/app.bundle.js");
+        }
+        if (request.destination === "style") {
+          return caches.match("/app.css") || caches.match("/styles.css");
+        }
+        return new Response("Offline", { status: 503 });
+      });
     })
   );
 });
