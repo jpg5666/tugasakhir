@@ -1,6 +1,6 @@
 import { loginModel } from "./loginModel.js";
 import {
-  renderLoginView,
+  displayLoginPage,
   setupLoginEvents,
   showSuccessLoginAlert,
   showFailedLoginAlert,
@@ -15,7 +15,7 @@ export function renderLogin() {
   if (!main) return;
 
   withViewTransition(() => {
-    main.innerHTML = renderLoginView();
+    displayLoginPage(main);
     loginPresenter();
   });
 }

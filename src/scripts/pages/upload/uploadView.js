@@ -1,13 +1,13 @@
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import "leaflet.markercluster/dist/leaflet.markercluster.js";
-import "leaflet.markercluster/dist/MarkerCluster.Default.css";
 import { withViewTransition } from "../../utils/transition.js";
+
+let uploadMapInstance = null;
 
 export function renderUploadForm() {
   return `
-    <section class="upload-section">
-     <h1>Tambah Cerita Baru</h1>
+    <section class="upload-section" tabindex="-1">
+      <h1>Tambah Cerita Baru</h1>
       <form id="upload-form">
         <input type="text" id="desc" placeholder="Deskripsi" required><br>
         <video id="camera-preview" autoplay playsinline width="100%" style="max-height:200px;"></video>
@@ -25,6 +25,11 @@ export function renderUploadForm() {
   `;
 }
 
+export function renderUploadSection(callback) {
+  const main = document.getElementById("main");
+  if (main) withViewTransition(() => callback(main));
+}
+
 export function getUploadElements() {
   return {
     form: document.getElementById("upload-form"),
@@ -40,6 +45,9 @@ export function getUploadElements() {
 
 export function togglePreview(show, src = "") {
   const { previewImg, video } = getUploadElements();
+  if (!previewImg || !video) {
+    return;
+  }
   if (show) {
     previewImg.src = src;
     previewImg.style.display = "block";
@@ -64,21 +72,18 @@ export function getLatLonInputs() {
   };
 }
 
-export function setupUploadFormEvents({ onCapture, onSubmit, onBack }) {
-  const { form, captureBtn, backButton } = getUploadElements();
-  captureBtn?.addEventListener("click", onCapture);
-  form?.addEventListener("submit", (e) => {
-    e.preventDefault();
-    onSubmit(e);
-  });
-  backButton?.addEventListener("click", onBack);
-}
-
 export function initMapAndMarker({ onLatLngUpdate, initialLat, initialLon }) {
   const mapElement = document.getElementById("map");
   if (!mapElement) return null;
 
+  if (uploadMapInstance) {
+    uploadMapInstance.remove();
+    uploadMapInstance = null;
+  }
+
   const map = L.map("map").setView([initialLat, initialLon], 13);
+  uploadMapInstance = map;
+
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
     attribution: "&copy; OpenStreetMap contributors",
   }).addTo(map);
@@ -86,7 +91,7 @@ export function initMapAndMarker({ onLatLngUpdate, initialLat, initialLon }) {
   const marker = L.marker([initialLat, initialLon], {
     draggable: true,
     icon: L.icon({
-      iconUrl: "./public/images/marker-icon.jpg",
+      iconUrl: "./images/user.png",
       iconSize: [40, 40],
       iconAnchor: [20, 40],
     }),
@@ -102,6 +107,8 @@ export function initMapAndMarker({ onLatLngUpdate, initialLat, initialLon }) {
     onLatLngUpdate(e.latlng.lat, e.latlng.lng);
   });
 
+  setTimeout(() => map.invalidateSize(), 100);
+
   return {
     setMarkerPosition(lat, lon) {
       map.setView([lat, lon], 15);
@@ -112,7 +119,10 @@ export function initMapAndMarker({ onLatLngUpdate, initialLat, initialLon }) {
 }
 
 export function startCameraPreview(videoElement, onStreamReady, onError) {
-  if (!videoElement) return onError(new Error("Video element kosong"));
+  if (!videoElement) {
+    onError(new Error("Video element kosong"));
+    return;
+  }
   navigator.mediaDevices
     .getUserMedia({ video: true })
     .then((stream) => {
@@ -129,31 +139,13 @@ export function stopCameraPreview(videoElement, mediaStream) {
   }
 }
 
-export function resetFormUI(form, fileInput, previewImg, video) {
-  form?.reset();
-  if (fileInput) fileInput.value = "";
-  if (previewImg) {
-    previewImg.src = "";
-    previewImg.style.display = "none";
-  }
-  if (video) video.style.display = "block";
-}
-
 export function displayAlert(message) {
   alert(message);
 }
 
-export function renderUploadSection(callback) {
-  const main = document.getElementById("main");
-  if (main) withViewTransition(() => callback(main));
-}
-
-export function cleanupCameraIfUploadInactive() {
-  if (window.location.hash !== "#/upload") {
-    const video = document.getElementById("camera-preview");
-    if (video?.srcObject) {
-      video.srcObject.getTracks().forEach((t) => t.stop());
-      video.srcObject = null;
-    }
+export function removeUploadMapInstance() {
+  if (uploadMapInstance) {
+    uploadMapInstance.remove();
+    uploadMapInstance = null;
   }
 }

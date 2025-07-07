@@ -75,7 +75,7 @@ class App {
 
     this.updateHeaderBasedOnAuth();
 
-    const isAuthPage = url === "/login" || url === "/register";
+    const isAuthPage = url === "/login" || url === "/register" || url === "/upload";
     const navDrawer = document.getElementById("navigation-drawer");
     const homeLink = document.getElementById("home-link");
 

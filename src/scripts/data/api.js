@@ -26,15 +26,24 @@ export async function registerUser(name, email, password) {
   }
 }
 
-export async function fetchAllStories({ size = 100 } = {}) {
+export async function fetchAllStories({ size = 100, location } = {}) {
   const token = localStorage.getItem("token");
-  const params = new URLSearchParams({ size, location }).toString();
-  const res = await fetch(`${BASE_URL}/stories?${params}`, {
+  const params = new URLSearchParams();
+  params.set("size", size);
+  if (location) params.set("location", location);
+
+  const res = await fetch(`${BASE_URL}/stories?${params.toString()}`, {
     headers: { Authorization: `Bearer ${token}` },
   });
 
-  const data = await res.json();
-  return data.error ? [] : data.listStory;
+  if (!res.ok || res.status === 204) return [];
+
+  try {
+    const data = await res.json();
+    return data.error ? [] : data.listStory;
+  } catch {
+    return [];
+  }
 }
 
 export async function uploadStory(formData) {

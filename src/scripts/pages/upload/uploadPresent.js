@@ -1,8 +1,7 @@
-import { uploadModel } from "./uploadModel.js";
+import { uploadModel, navigateToHome } from "./uploadModel.js";
 import {
   renderUploadForm,
   renderUploadSection,
-  setupUploadFormEvents,
   getUploadElements,
   togglePreview,
   updateLatLonInputs,
@@ -10,36 +9,17 @@ import {
   initMapAndMarker,
   startCameraPreview,
   stopCameraPreview,
-  resetFormUI,
   displayAlert,
+  removeUploadMapInstance,
 } from "./uploadView.js";
-
-import { redirectToHome } from "./uploadModel.js";
+import { subscribeToPushNotification } from "../../utils/push.js";
 
 let mediaStream = null;
 let captured = false;
 
-export function renderUploadPage() {
-  renderUploadSection((main) => {
-    main.innerHTML = renderUploadForm();
-  });
-}
-
-export function uploadPresenter() {
-  requestAnimationFrame(() => {
-    requestAnimationFrame(() => {
-      setupUploadFormEvents({
-        onCapture: handleCapture,
-        onSubmit: handleSubmit,
-        onBack: handleBackToHome,
-      });
-      initUploadProcess();
-    });
-  });
-}
-
 function initUploadProcess() {
   const { video } = getUploadElements();
+  if (!video) return;
   captured = false;
   togglePreview(false);
 
@@ -59,6 +39,8 @@ function initUploadProcess() {
     initialLon: 106.8,
   });
 
+  if (!mapInstance) return;
+
   navigator.geolocation.getCurrentPosition(
     (pos) => {
       const { latitude, longitude } = pos.coords;
@@ -66,7 +48,10 @@ function initUploadProcess() {
       updateLatLonInputs(latitude, longitude);
     },
     () => {
-      mapInstance.setMarkerPosition(-6.2, 106.8);
+      const fallbackLat = -6.2;
+      const fallbackLon = 106.8;
+      mapInstance.setMarkerPosition(fallbackLat, fallbackLon);
+      updateLatLonInputs(fallbackLat, fallbackLon); // ✅ ini penting
     }
   );
 }
@@ -77,6 +62,7 @@ function handleCapture() {
     displayAlert("Kamera belum aktif.");
     return;
   }
+  if (!video || !canvas || !fileInput) return;
 
   const ctx = canvas.getContext("2d");
   if (!ctx) {
@@ -106,8 +92,9 @@ function handleCapture() {
   );
 }
 
-async function handleSubmit() {
-  const { descInput, fileInput, form, previewImg, video } = getUploadElements();
+async function handleFormSubmit(e) {
+  e.preventDefault();
+  const { descInput, fileInput } = getUploadElements();
   const { lat, lon } = getLatLonInputs();
   const description = descInput.value.trim();
   const photo = fileInput.files[0];
@@ -127,19 +114,44 @@ async function handleSubmit() {
   formData.append("lat", lat);
   formData.append("lon", lon);
 
-  const result = await uploadModel.uploadStoryData(formData);
-  if (!result.error) {
-    displayAlert("Cerita berhasil diunggah!");
-    stopCameraPreview(video, mediaStream);
-    resetFormUI(form, fileInput, previewImg, video);
-    handleBackToHome();
-  } else {
-    displayAlert(result.message || "Gagal mengunggah cerita.");
+  try {
+    const result = await uploadModel.executeUpload(formData);
+    if (!result.error) {
+      await subscribeToPushNotification(description);
+      handleBackToHome();
+    } else {
+      displayAlert(result.message || "Gagal mengunggah cerita.");
+    }
+  } catch {
+    displayAlert("Tidak ada jaringan pada saat ini.");
   }
 }
 
 function handleBackToHome() {
   const { video } = getUploadElements();
   stopCameraPreview(video, mediaStream);
-  redirectToHome();
+  removeUploadMapInstance();
+  navigateToHome();
+}
+
+function initializePageLogic() {
+  const { form, captureBtn, backButton } = getUploadElements();
+  if (!form) return;
+
+  form.addEventListener("submit", handleFormSubmit);
+  if (captureBtn) captureBtn.addEventListener("click", handleCapture);
+  if (backButton) backButton.addEventListener("click", handleBackToHome);
+
+  initUploadProcess();
+}
+
+export function uploadPresenter() {
+  if (Notification.permission !== "granted") {
+    Notification.requestPermission();
+  }
+
+  renderUploadSection((main) => {
+    main.innerHTML = renderUploadForm();
+    requestAnimationFrame(initializePageLogic);
+  });
 }

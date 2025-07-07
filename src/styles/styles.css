@@ -7,7 +7,7 @@
 body {
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   line-height: 1.6;
-  background-color: #f4f4f4;
+  background-color: #ebffd8;
   color: #333;
   min-height: 100vh;
   display: flex;
@@ -15,7 +15,7 @@ body {
 }
 
 header {
-  background-color: #bcb8c2;
+  background-color: #8dbcc7;
   color: #fff;
   padding: 1rem 0;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -106,7 +106,7 @@ main {
 }
 
 footer {
-  background-color: #eee;
+  background-color: #a4ccd9;
   text-align: center;
   padding: 1rem;
   color: #555;
@@ -118,13 +118,13 @@ footer {
   justify-content: center;
   align-items: center;
   min-height: calc(100vh - 160px);
-  background: #f2f2f2;
+  background: #ebffd8;
   padding: 2rem;
 }
 
 .login-card,
 .auth-card {
-  background: #fff;
+  background: #c4e1e6;
   padding: 2rem;
   border-radius: 12px;
   max-width: 400px;
@@ -155,7 +155,7 @@ footer {
 .login-card button,
 .auth-card button {
   padding: 0.75rem;
-  background: #007bff;
+  background: #8dbcc7;
   color: white;
   border: none;
   border-radius: 8px;
@@ -165,7 +165,7 @@ footer {
 
 .login-card button:hover,
 .auth-card button:hover {
-  background: #0056b3;
+  background: #a4ccd9;
 }
 
 .login-card p,
@@ -216,7 +216,7 @@ h2 {
 .story-card h3 {
   margin: 0 0 8px 0;
   font-size: 18px;
-  color: #007bff;
+  color: #8dbcc7;
 }
 
 .story-card p {
@@ -242,7 +242,7 @@ h2 {
   width: 56px;
   height: 56px;
   border-radius: 50%;
-  background: #007bff;
+  background: #8dbcc7;
   color: white;
   font-size: 28px;
   align-items: center;
@@ -254,7 +254,7 @@ h2 {
 }
 
 .floating-button:hover {
-  background-color: #0056b3;
+  background-color: #a4ccd9;
 }
 
 #upload-modal-toggle {
@@ -279,7 +279,7 @@ h2 {
 }
 
 .upload-box {
-  background: white;
+  background: #c4e1e6;
   padding: 20px;
   border-radius: 12px;
   width: 90%;
@@ -310,7 +310,7 @@ h2 {
 
 .upload-box button {
   padding: 10px;
-  background-color: #007bff;
+  background-color: #8dbcc7;
   border: none;
   color: white;
   font-weight: bold;
@@ -320,7 +320,7 @@ h2 {
 }
 
 .upload-box button:hover {
-  background-color: #0056b3;
+  background-color: #a4ccd9;
 }
 
 .close-button {
@@ -328,7 +328,7 @@ h2 {
   top: 8px;
   right: 12px;
   font-weight: bold;
-  background: crimson;
+  background: #ff5c5c;
   color: white;
   padding: 6px 10px;
   border-radius: 6px;
@@ -338,7 +338,7 @@ h2 {
 }
 
 .close-button:hover {
-  background-color: darkred;
+  background-color: #d32f2f;
 }
 
 .map-page {
@@ -361,7 +361,7 @@ h2 {
   max-width: 600px;
   margin: 20px auto;
   padding: 20px;
-  background-color: #fff;
+  background-color: #c4e1e6;
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   text-align: center;
@@ -395,7 +395,7 @@ h2 {
 
 .upload-section button {
   padding: 10px 15px;
-  background-color: #007bff;
+  background-color: #8dbcc7;
   color: white;
   border: none;
   border-radius: 4px;
@@ -405,16 +405,16 @@ h2 {
 }
 
 .upload-section button:hover {
-  background-color: #0056b3;
+  background-color: #a4ccd9;
 }
 
 .upload-section .back-button {
-  background-color: #6c757d;
+  background-color: #c4e1e6;
   margin-top: 20px;
 }
 
 .upload-section .back-button:hover {
-  background-color: #5a6268;
+  background-color: #a4ccd9;
 }
 
 .upload-section #map {
@@ -476,20 +476,92 @@ main::view-transition-new(main-content) {
   }
 }
 
-.skip-link {
+.skip-to-content {
   position: absolute;
-  top: -40px;
-  left: 0;
-  background-color: #000;
-  color: #fff;
-  padding: 8px 16px;
-  z-index: 1000;
-  text-decoration: none;
-  font-weight: bold;
-  border-radius: 4px;
-  transition: top 0.3s ease;
+  left: -9999px;
+  top: auto;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(1px, 1px, 1px, 1px);
+  white-space: nowrap;
 }
 
-.skip-link:focus {
-  top: 0;
+.skip-to-content:focus {
+  position: static;
+  left: auto;
+  width: auto;
+  height: auto;
+  clip: auto;
+  overflow: visible;
+  background: #909aa3;
+  color: #fff;
+  padding: 12px 24px;
+  border-radius: 6px;
+  z-index: 10000;
+  outline: 2px solid #1d1e1f;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #8dbcc7;
+  color: white;
+  padding: 12px 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  font-size: 14px;
+  opacity: 0;
+  transition:
+    opacity 0.3s ease,
+    transform 0.3s ease;
+  z-index: 1000;
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.toast.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.button-danger {
+  background-color: #a2ce91;
+  color: #fff;
+  font-weight: bold;
+  border: none;
+  padding: 10px 18px;
+  font-size: 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  box-shadow: 0 4px 10px rgba(255, 92, 92, 0.2);
+}
+
+.button-danger:hover {
+  background-color: #4fec7e;
+}
+
+.button-danger:disabled {
+  background-color: #ccc;
+  color: #666;
+  cursor: not-allowed;
+}
+
+@media (max-width: 600px) {
+  .button-danger {
+    font-size: 13px;
+    padding: 8px 14px;
+  }
+}
+
+.floating-button i {
+  font-size: 22px;
+  line-height: 1;
 }

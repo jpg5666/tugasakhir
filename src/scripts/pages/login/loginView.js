@@ -1,6 +1,6 @@
 export function renderLoginView() {
   return `
-    <section class="login-section">
+    <section class="login-section" tabindex="-1">
       <div class="login-card">
         <h1>Login</h1>
         <form id="login-form">
@@ -14,6 +14,11 @@ export function renderLoginView() {
       </div>
     </section>
   `;
+}
+
+export function displayLoginPage(mainElement) {
+  if (!mainElement) return;
+  mainElement.innerHTML = renderLoginView();
 }
 
 export function getLoginElements() {

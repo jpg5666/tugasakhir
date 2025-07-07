@@ -1,6 +1,6 @@
 export function renderRegisterView() {
   return `
-    <section class="auth-page">
+    <section class="auth-page" tabindex="-1">
       <div class="auth-card">
         <h1>Register</h1>
         <form id="register-form">
@@ -16,6 +16,11 @@ export function renderRegisterView() {
       </div>
     </section>
   `;
+}
+
+export function displayRegisterPage(mainElement) {
+  if (!mainElement) return;
+  mainElement.innerHTML = renderRegisterView();
 }
 
 export function getRegisterElements() {

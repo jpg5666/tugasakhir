@@ -1,11 +1,11 @@
 import { uploadStory } from "../../data/api.js";
 
 export const uploadModel = {
-  async uploadStoryData(formData) {
+  async executeUpload(formData) {
     return await uploadStory(formData);
   },
 };
 
-export function redirectToHome() {
+export function navigateToHome() {
   window.location.hash = "#/home";
 }

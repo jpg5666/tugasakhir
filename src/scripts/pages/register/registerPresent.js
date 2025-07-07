@@ -1,6 +1,6 @@
 import { registerModel } from "./registerModel.js";
 import {
-  renderRegisterView,
+  displayRegisterPage,
   setupRegisterEvents,
   showRegisterAlert,
   getRegisterFormData,
@@ -13,7 +13,7 @@ export function renderRegister() {
   if (!main) return;
 
   withViewTransition(() => {
-    main.innerHTML = renderRegisterView();
+    displayRegisterPage(main);
     registerPresenter();
   });
 }

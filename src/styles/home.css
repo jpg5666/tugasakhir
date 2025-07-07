@@ -1,6 +1,6 @@
 body {
   font-family: "Segoe UI", sans-serif;
-  background-color: #f4f4f4;
+  background-color: #ebffd8;
   margin: 0;
   padding: 0;
 }
@@ -29,7 +29,7 @@ h2 {
 .story-card {
   display: flex;
   flex-direction: column;
-  background-color: #fff;
+  background-color: #c4e1e6;
   border: 1px solid #ddd;
   border-radius: 12px;
   padding: 16px;
@@ -47,12 +47,13 @@ h2 {
   object-fit: cover;
   border-radius: 8px;
   margin-bottom: 12px;
+  background-color: #eee;
 }
 
 .story-card h3 {
   margin: 0 0 8px;
   font-size: 18px;
-  color: #007bff;
+  color: #8dbcc7;
 }
 
 .story-card p {
@@ -78,7 +79,7 @@ h2 {
   width: 56px;
   height: 56px;
   border-radius: 50%;
-  background: #007bff;
+  background: #8dbcc7;
   color: white;
   font-size: 28px;
   align-items: center;
@@ -90,7 +91,7 @@ h2 {
 }
 
 .floating-button:hover {
-  background-color: #0056b3;
+  background-color: #a4ccd9;
 }
 
 #upload-modal-toggle {
@@ -115,7 +116,7 @@ h2 {
 }
 
 .upload-box {
-  background: white;
+  background: #c4e1e6;
   padding: 20px;
   border-radius: 12px;
   width: 90%;
@@ -146,7 +147,7 @@ h2 {
 
 .upload-box button {
   padding: 10px;
-  background-color: #007bff;
+  background-color: #8dbcc7;
   border: none;
   color: white;
   font-weight: bold;
@@ -156,7 +157,7 @@ h2 {
 }
 
 .upload-box button:hover {
-  background-color: #0056b3;
+  background-color: #a4ccd9;
 }
 
 .close-button {
@@ -164,7 +165,7 @@ h2 {
   top: 8px;
   right: 12px;
   font-weight: bold;
-  background: crimson;
+  background: #ff5c5c;
   color: white;
   padding: 6px 10px;
   border-radius: 6px;
@@ -174,7 +175,7 @@ h2 {
 }
 
 .close-button:hover {
-  background-color: darkred;
+  background-color: #d32f2f;
 }
 
 @keyframes fadeIn {
@@ -210,5 +211,35 @@ h2 {
   .close-button {
     padding: 4px 8px;
     font-size: 12px;
+  }
+}
+
+.button-danger {
+  background-color: #ff5c5c;
+  color: #fff;
+  font-weight: bold;
+  border: none;
+  padding: 10px 18px;
+  font-size: 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  box-shadow: 0 4px 10px rgba(255, 92, 92, 0.2);
+}
+
+.button-danger:hover {
+  background-color: #d32f2f;
+}
+
+.button-danger:disabled {
+  background-color: #ccc;
+  color: #666;
+  cursor: not-allowed;
+}
+
+@media (max-width: 600px) {
+  .button-danger {
+    font-size: 13px;
+    padding: 8px 14px;
   }
 }
