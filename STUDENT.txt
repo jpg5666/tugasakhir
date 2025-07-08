@@ -1,2 +1,2 @@
-APP_URL=https://keen-kulfi-fe0247.netlify.app/#/home
+APP_URL=https://keen-kulfi-fe0247.netlify.app
 MAP_SERVICE_API_KEY=<api_key>

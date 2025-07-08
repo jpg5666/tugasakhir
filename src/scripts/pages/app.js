@@ -40,10 +40,18 @@ class App {
 
     if (!navList) return;
 
-    navList.innerHTML = `
-      <li><a href="#/map">Map</a></li>
-      <li><a href="${token ? "#/logout" : "#/login"}">${token ? "Logout" : "Login"}</a></li>
-    `;
+    if (token) {
+      navList.innerHTML = `
+        <li><a href="#/fav">Favorit</a></li>
+        <li><a href="#/map">Map</a></li>
+        <li><a href="#/logout">Logout</a></li>
+      `;
+    } else {
+      navList.innerHTML = `
+        <li><a href="#/login">Login</a></li>
+        <li><a href="#/register">Register</a></li>
+      `;
+    }
 
     if (token) {
       const logoutLink = navList.querySelector('a[href="#/logout"]');

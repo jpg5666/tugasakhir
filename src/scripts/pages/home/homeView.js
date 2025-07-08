@@ -1,3 +1,5 @@
+import { favModel } from "../fav/favModel.js";
+
 export function renderHomePageView() {
   const main = document.getElementById("main");
   if (!main) return;
@@ -41,7 +43,7 @@ export function renderHome() {
   return section;
 }
 
-export function renderStoryList(stories) {
+export async function renderStoryList(stories) {
   const listContainer = document.getElementById("story-list");
   if (!listContainer) return;
 
@@ -51,32 +53,49 @@ export function renderStoryList(stories) {
     return;
   }
 
-  const storyCards = stories.map((story) => {
-    const card = document.createElement("div");
-    card.className = "story-card";
+  const storyCards = await Promise.all(
+    stories.map(async (story) => {
+      const card = document.createElement("div");
+      card.className = "story-card";
 
-    const img = document.createElement("img");
-    img.src = story.photoUrl;
-    img.alt = `Foto oleh ${story.name}`;
-    img.className = "story-img";
-    img.onerror = function () {
-      this.src = "https://placehold.co/600x400?text=Gambar+Error";
-    };
+      const img = document.createElement("img");
+      img.src = story.photoUrl;
+      img.alt = `Foto oleh ${story.name}`;
+      img.className = "story-img";
+      img.onerror = function () {
+        this.src = "https://placehold.co/600x400?text=Gambar+Error";
+      };
 
-    const title = document.createElement("h3");
-    title.textContent = story.name;
+      const title = document.createElement("h3");
+      title.textContent = story.name;
 
-    const desc = document.createElement("p");
-    desc.textContent = story.description;
+      const desc = document.createElement("p");
+      desc.textContent = story.description;
 
-    const coord = document.createElement("p");
-    if (story.lat && story.lon) {
-      coord.innerHTML = `<small>${story.lat}, ${story.lon}</small>`;
-    }
+      const coord = document.createElement("p");
+      if (story.lat && story.lon) {
+        coord.innerHTML = `<small>${story.lat}, ${story.lon}</small>`;
+      }
 
-    card.append(img, title, desc, coord);
-    return card;
-  });
+      const favButton = document.createElement("button");
+
+      const isFavorited = await favModel.getById(story.id);
+      if (isFavorited) {
+        favButton.textContent = "Sudah difavoritkan";
+        favButton.disabled = true;
+      } else {
+        favButton.textContent = "Favorit";
+        favButton.addEventListener("click", async () => {
+          await favModel.add(story);
+          favButton.textContent = "Sudah difavoritkan";
+          favButton.disabled = true;
+        });
+      }
+
+      card.append(img, title, desc, coord, favButton);
+      return card;
+    })
+  );
 
   listContainer.replaceChildren(...storyCards);
   const msg = document.getElementById("home-message");
