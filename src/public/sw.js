@@ -84,9 +84,32 @@ self.addEventListener("fetch", (event) => {
 });
 
 self.addEventListener("push", (event) => {
-  if (!event.data) return;
-  const data = event.data.json();
-  const title = data.title || "Notifikasi";
-  const options = data.options || { body: "Notifikasi baru diterima." };
-  event.waitUntil(self.registration.showNotification(title, options));
+   event.waitUntil(
+    (async () => {
+      let data = {
+        title: "Notifikasi",
+        options: {
+          body: "Pesan masuk",
+        },
+      };
+
+      try {
+        if (event.data) {
+          try {
+            data = event.data.json();
+          } catch {
+            const fallbackText = await event.data.text();
+            data = {
+              title: "Notifikasi",
+              options: {
+                body: fallbackText,
+              },
+            };
+          }
+        }
+      } catch {}
+
+      self.registration.showNotification(data.title, data.options);
+    })()
+  );
 });
